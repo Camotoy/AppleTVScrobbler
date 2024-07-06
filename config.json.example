@@ -1,6 +1,5 @@
 {
   "identifier": "FF:FF:FF:FF:FF:FF",
-  "credentials": "long_credentials_string",
   "app": "com.apple.TVMusic",
   "maloja_url": "http://127.0.0.1:42010",
   "maloja_api_key": "anwufnaowfnaiegnauoihwfoawnfq73gh45ibwfbq93nfq9"

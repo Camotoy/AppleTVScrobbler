@@ -8,7 +8,7 @@ from appletvscrobbler.MalojaInterface import MalojaServer
 from appletvscrobbler.PlayStatusTracker import PlayStatusTracker
 
 
-class AppleTvListener(pyatv.interface.PushListener, pyatv.interface.DeviceListener):
+class AppleTvListener(pyatv.interface.PushListener):
     """Listen for push updates and print changes."""
 
     def __init__(self, config, atv: pyatv.interface.AppleTV, maloja_server: MalojaServer):
@@ -36,9 +36,3 @@ class AppleTvListener(pyatv.interface.PushListener, pyatv.interface.DeviceListen
     def playstatus_error(self, updater, exception: Exception) -> None:
         """Inform about an error when updating play status."""
         print(exception)
-
-    def connection_lost(self, exception: Exception) -> None:
-        pass
-
-    def connection_closed(self) -> None:
-        pass

@@ -28,8 +28,7 @@ class PlayStatusTracker():
         should_reset_duration = self.should_reset_duration(self.playstatus, playstatus)
         is_new_song = self.is_new_song(self.playstatus, playstatus)
         if (is_new_song or should_reset_duration) and self.can_submit_as_scrobble():
-            print(is_new_song)
-            print(should_reset_duration)
+            print("Is new song?: " + str(is_new_song) + " Should reset duration?: " + str(should_reset_duration))
             print("Uploading scrobble.")
             asyncio.ensure_future(self.parent.maloja_server.upload_scrobble(self.playstatus, self.duration_played))
 

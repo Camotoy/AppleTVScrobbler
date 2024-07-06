@@ -1,6 +1,8 @@
 import asyncio
 import json
+import os
 from asyncio import AbstractEventLoop
+from pathlib import Path
 
 import pyatv
 from pyatv.interface import BaseConfig
@@ -16,9 +18,17 @@ class MainLoop():
         self.abort_sem = asyncio.Semaphore(0)
         self.loop = loop
 
-        config_name = "../config.json"
-        with open(config_name) as f:
-            self.config = json.load(f)
+        config_name = Path("../config.json")
+        if config_name.exists():
+            with config_name.open() as f:
+                self.config = json.load(f)
+        else:
+            self.config: dict = {
+                "identifier": os.environ["ATS_IDENTIFIER"],
+                "app": os.environ["ATS_APP"],
+                "maloja_rul": os.environ["ATS_MALOJA_URL"],
+                "maloja_api_key": os.environ["ATS_MALOJA_API_KEY"]
+            }
 
     async def start(self):
         # Maloja

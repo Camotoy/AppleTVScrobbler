@@ -1,4 +1,5 @@
 import asyncio
+import time
 from asyncio import Task
 from typing import Optional
 
@@ -17,6 +18,7 @@ class PlayStatusTracker():
         self.playing: bool = False
         self.task: Optional[Task] = None
         self.duration_played = 0
+        self.time_started = 0
         self.update_playstatus(playstatus)
 
     def update_playstatus(self, playstatus: Playing):
@@ -30,10 +32,15 @@ class PlayStatusTracker():
         if (is_new_song or should_reset_duration) and self.can_submit_as_scrobble():
             print("Is new song?: " + str(is_new_song) + " Should reset duration?: " + str(should_reset_duration))
             print("Uploading scrobble.")
-            asyncio.ensure_future(self.parent.maloja_server.upload_scrobble(self.playstatus, self.duration_played))
+            asyncio.ensure_future(self.parent.maloja_server.upload_scrobble(self.playstatus, self.duration_played, self.time_started))
 
-        self.playstatus: Playing = playstatus
-        self.time = playstatus.position
+        if is_new_song or should_reset_duration or not self.playstatus:
+            # Seems like all scrobblers want when the song STARTED.
+            self.time_started = int(time.time())
+
+        if playstatus.device_state is DeviceState.Playing or playstatus.device_state is DeviceState.Paused:
+            self.playstatus: Playing = playstatus
+            self.time = playstatus.position
         self.playing = playstatus.device_state == DeviceState.Playing
 
         if is_new_song:
@@ -48,6 +55,8 @@ class PlayStatusTracker():
     def should_reset_duration(self, old_playstatus: Optional[Playing], new_playstatus: Playing) -> bool:
         if old_playstatus is None:
             return False
+        if new_playstatus.device_state is not DeviceState.Playing and new_playstatus.device_state is not DeviceState.Paused:
+            return True
         # Should account for latency while allowing repeats?
         if abs(new_playstatus.position - self.time) <= 5:
             return False

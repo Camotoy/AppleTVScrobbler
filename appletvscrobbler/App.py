@@ -26,7 +26,7 @@ class MainLoop():
             self.config: dict = {
                 "identifier": os.environ["ATS_IDENTIFIER"],
                 "app": os.environ["ATS_APP"],
-                "maloja_rul": os.environ["ATS_MALOJA_URL"],
+                "maloja_url": os.environ["ATS_MALOJA_URL"],
                 "maloja_api_key": os.environ["ATS_MALOJA_API_KEY"]
             }
 
@@ -38,7 +38,11 @@ class MainLoop():
         code = await self.maloja.health()
         print("Health code is " + str(code))
 
-        self.storage = FileStorage.default_storage(self.loop)
+        storage_location = os.environ.get("ATS_PYATVCONF")
+        if storage_location:
+            self.storage = FileStorage(storage_location, self.loop)
+        else:
+            self.storage = FileStorage.default_storage(self.loop)
         await self.storage.load()
 
         results = await pyatv.scan(identifier=self.config["identifier"], loop=self.loop, storage=self.storage)

@@ -8,13 +8,14 @@ class MalojaServer():
         self._url = config["maloja_url"]
         self._api_key = config["maloja_api_key"]
 
-    async def upload_scrobble(self, playstatus: Playing, duration_played):
+    async def upload_scrobble(self, playstatus: Playing, duration_played, time_started):
         json_data = {
             'artist': playstatus.artist,
             'title': playstatus.title,
             'album': playstatus.album,
             'duration': duration_played,
-            'length': playstatus.total_time
+            'length': playstatus.total_time,
+            'time': time_started
         }
 
         params: dict = {"key": self._api_key}
